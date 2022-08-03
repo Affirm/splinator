@@ -16,23 +16,13 @@
 
 .. |ReadTheDocs| image:: https://readthedocs.org/projects/splinator/badge/?version=latest
 .. _ReadTheDocs: https://splinator.readthedocs.io/en/latest/?badge=latest
-
-project-template - A template for scikit-learn contributions
+Splinator: Linear-spline Logistic Regression for Calibration
 ============================================================
 
 .. _scikit-learn: https://scikit-learn.org
 
-**project-template** is a template project for scikit-learn_ compatible
-extensions.
+scikit-learn_ compatible
 
-It aids development of estimators that can be used in scikit-learn pipelines
-and (hyper)parameter search, while facilitating testing (including some API
-compliance), documentation, open source development, packaging, and continuous
-integration.
+
 
 .. _documentation: https://splinator.readthedocs.io/en/latest/quick_start.html
-
-Refer to the documentation_ to modify the template for your own scikit-learn
-contribution.
-
-*Thank you for cleanly contributing to the scikit-learn ecosystem!*
