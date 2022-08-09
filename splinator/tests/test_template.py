@@ -5,9 +5,7 @@ from sklearn.datasets import load_iris
 from numpy.testing import assert_array_equal
 from numpy.testing import assert_allclose
 
-from splinator import TemplateEstimator
-from splinator import TemplateTransformer
-from splinator import TemplateClassifier
+from splinator import LinearSplineLogisticRegression
 
 
 @pytest.fixture
