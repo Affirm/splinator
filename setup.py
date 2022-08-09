@@ -12,14 +12,14 @@ with open(ver_file) as f:
     exec(f.read())
 
 DISTNAME = 'splinator'
-DESCRIPTION = 'Python library for fitting linear-spine based logistic regression for calibration.'
+DESCRIPTION = 'A template for scikit-learn compatible packages.'
 with codecs.open('README.rst', encoding='utf-8-sig') as f:
     LONG_DESCRIPTION = f.read()
-MAINTAINER = 'Affirm'
-MAINTAINER_EMAIL = 'jiarui.xu@affirm.com'
-URL = 'https://github.com/Affirm/splinator'
+MAINTAINER = 'V. Birodkars, G. Lemaitre'
+MAINTAINER_EMAIL = 'vighneshbirodkar@nyu.edu, g.lemaitre58@gmail.com'
+URL = 'https://github.com/scikit-learn-contrib/project-template'
 LICENSE = 'new BSD'
-DOWNLOAD_URL = 'https://github.com/Affirm/splinator'
+DOWNLOAD_URL = 'https://github.com/scikit-learn-contrib/project-template'
 VERSION = __version__
 INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn']
 CLASSIFIERS = ['Intended Audience :: Science/Research',

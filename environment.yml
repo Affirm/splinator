@@ -1,4 +1,4 @@
-name: splinator
+name: project-template
 dependencies:
   - numpy
   - scipy

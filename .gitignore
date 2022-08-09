@@ -65,6 +65,3 @@ doc/generated/
 
 # PyBuilder
 target/
-
-.DS_Store
-.idea/
