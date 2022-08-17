@@ -16,7 +16,7 @@
 
 .. |ReadTheDocs| image:: https://readthedocs.org/projects/splinator/badge/?version=latest
 .. _ReadTheDocs: https://splinator.readthedocs.io/en/latest/?badge=latest
-Splinator: Linear-spline Logistic Regression for Calibration
+Splinator: Spline-based Models for Probability Calibration
 ============================================================
 
 .. _scikit-learn: https://scikit-learn.org
