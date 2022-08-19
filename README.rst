@@ -14,9 +14,14 @@ Installation
 
 ``pip install splinator``
 
+Algorithm
+------------
+(Link to medium blog and arxiv PDF)
+
 Development
 ------------
 The dependencies are managed by poetry_
+
 To run tests, run ``poetry run pytest splinator/tests``
 
 Example Usage
