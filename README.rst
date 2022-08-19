@@ -1,6 +1,6 @@
 .. -*- mode: rst -*-
 
-Splinator
+Splinator 📈
 ============================================================
 .. _scikit-learn: https://scikit-learn.org
 .. _poetry: https://python-poetry.org/docs/basic-usage/
