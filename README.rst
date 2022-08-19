@@ -1,10 +1,11 @@
 .. -*- mode: rst -*-
 
-Splinator: Spline-based Regression Models for Probability Calibration
+Splinator
 ============================================================
-
 .. _scikit-learn: https://scikit-learn.org
 .. _poetry: https://python-poetry.org/docs/basic-usage/
+
+**Spline-based Regression Models for Probability Calibration**
 
 scikit-learn_ compatible
 
