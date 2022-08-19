@@ -4,6 +4,7 @@ Splinator
 ============================================================
 .. _scikit-learn: https://scikit-learn.org
 .. _poetry: https://python-poetry.org/docs/basic-usage/
+.. _PR#1: https://github.com/Affirm/splinator/pull/1
 
 **Spline-based Regression Models for Probability Calibration**
 
@@ -17,6 +18,10 @@ Installation
 Algorithm
 ------------
 (Link to medium blog and arxiv PDF)
+
+Releases
+------------
+alpha version in active development: PR#1_
 
 Development
 ------------
