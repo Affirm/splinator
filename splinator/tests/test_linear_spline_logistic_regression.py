@@ -81,7 +81,6 @@ class TestFitOnSyntheticData(unittest.TestCase):
                 minimizer_options=permutation['minimizer_options'],
             )
             fit_n_knots_model.fit(X_values, y_values)
-            print(permutation)
             assert_allclose_absolute(
                 fit_n_knots_model.predict(X_values), true_prob_values, atol=0.08, allowed_not_close_fraction=0.08
             )
