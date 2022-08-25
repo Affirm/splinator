@@ -17,11 +17,11 @@ Installation
 
 Algorithm
 ------------
-(Link to medium blog and arxiv PDF)
+Coming (Link to medium blog and arxiv PDF)
 
 Releases
 ------------
-alpha version in active development: PR_
+alpha version in active development. the stable release is expected to arrive by the end of 2022
 
 Development
 ------------
