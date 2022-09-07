@@ -13,7 +13,7 @@ scikit-learn_ compatible
 Installation
 ------------
 
-``pip install splinator`` (will be available by end of August)
+``pip install splinator``
 
 Algorithm
 ------------
