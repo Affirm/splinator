@@ -1,8 +1,16 @@
 [tool.poetry]
 name = "splinator"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python library for fitting linear-spine based logistic regression for calibration."
 authors = ["Jiarui Xu <jiarui.xu@affirm.com>"]
+license = 'BSD-3-Clause'
+keywords = ["calibration", "logistic", "spline", "regression"]
+classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.7.1"
