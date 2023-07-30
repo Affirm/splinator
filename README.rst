@@ -37,12 +37,12 @@ Coming (Link to medium blog and arxiv PDF)
 
 Examples
 ------------
-+------------------------------------------------+----------+
-| comparison                                     | notebook |
-+================================================+==========+
-| scikit-learn's sigmoid and isotonic regression | |colab|  |
-| pyGAM’s spline model                           | |colab|  |
-+------------------------------------------------+----------+
++------------------------------------------------+------------+
+| comparison                                     |  notebook  |
++================================================+============+
+| scikit-learn's sigmoid and isotonic regression |  |colab|   |
+| pyGAM’s spline model                           |  |colab|   |
++------------------------------------------------+------------+
 
 Development
 ------------
