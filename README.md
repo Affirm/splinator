@@ -5,9 +5,7 @@
 [scikit-learn](https://scikit-learn.org) compatible
 
 [![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
-
 [![Documentation Status](https://readthedocs.org/projects/splinator/badge/?version=latest)](https://splinator.readthedocs.io/en/latest/)
-
 [![Build](https://img.shields.io/github/actions/workflow/status/affirm/splinator/.github/workflows/python-package.yml)](https://github.com/affirm/splinator/actions)
 
 ## Installation
@@ -28,46 +26,10 @@ Regression](https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regr
     learning. 2004.
 
 ## Examples
-
-+------------------------------------------------+------------+
-| comparison                                     | notebook   |
-+================================================+============+
-| scikit-learn\'s sigmoid and isotonic           | > [        |
-| regression                                     | ![colab](h |
-|                                                | ttps://col |
-|                                                | ab.researc |
-|                                                | h.google.c |
-|                                                | om/assets/ |
-|                                                | colab-badg |
-|                                                | e.svg)](ht |
-|                                                | tps://gith |
-|                                                | ubtocolab. |
-|                                                | com/Affirm |
-|                                                | /splinator |
-|                                                | /blob/main |
-|                                                | /examples/ |
-|                                                | spline_mod |
-|                                                | el_compari |
-|                                                | son.ipynb) |
-+------------------------------------------------+------------+
-| pyGAM's spline model                           | > [        |
-|                                                | ![colab](h |
-|                                                | ttps://col |
-|                                                | ab.researc |
-|                                                | h.google.c |
-|                                                | om/assets/ |
-|                                                | colab-badg |
-|                                                | e.svg)](ht |
-|                                                | tps://gith |
-|                                                | ubtocolab. |
-|                                                | com/Affirm |
-|                                                | /splinator |
-|                                                | /blob/main |
-|                                                | /examples/ |
-|                                                | spline_mod |
-|                                                | el_compari |
-|                                                | son.ipynb) |
-+------------------------------------------------+------------+
+| comparison                                     | notebook                                                                                                                 |
+|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| scikit-learn's sigmoid and isotonic regression | [![colab1](path/to/image2)](https://github.com/Affirm/splinator/blob/main/examples/calibrator_model_comparison.ipynb)    |
+| pyGAM’s spline model                           | [![colab2](path/to/image2)](https://githubtocolab.com/Affirm/splinator/blob/main/examples/spline_model_comparison.ipynb) |
 
 ## Development
 
