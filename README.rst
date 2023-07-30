@@ -3,7 +3,7 @@
 Splinator 📈
 ============================================================
 .. _scikit-learn: https://scikit-learn.org
-.. _poetry: https://python-poetry.org/docs/basic-usage/
+.. _pdm: https://pdm.fming.dev/latest/
 .. _PR: https://github.com/Affirm/splinator/pull/1
 
 **Probablistic Calibration with Regression Splines**
@@ -37,9 +37,9 @@ alpha version in active development. the stable release is expected to arrive by
 
 Development
 ------------
-The dependencies are managed by poetry_
+The dependencies are managed by pdm_
 
-To run tests, run ``poetry run pytest splinator/tests``
+To run tests, run ``pdm run -v pytest tests``
 
 Example Usage
 --------------
