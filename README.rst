@@ -33,7 +33,7 @@ Installation
 
 Algorithm
 ------------
-Coming (Link to medium blog and arxiv PDF)
+You can find more information in the `Linear Spline Logistic Regression <https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regression>`_.
 
 Examples
 ------------
