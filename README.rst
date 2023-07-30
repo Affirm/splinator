@@ -6,7 +6,7 @@ Splinator 📈
 .. _poetry: https://python-poetry.org/docs/basic-usage/
 .. _PR: https://github.com/Affirm/splinator/pull/1
 
-**Spline-based Regression Models for Probability Calibration**
+**Probablistic Calibration with Regression Splines**
 
 scikit-learn_ compatible
 
