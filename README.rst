@@ -33,7 +33,12 @@ Installation
 
 Algorithm
 ------------
-You can find more information in the `Linear Spline Logistic Regression <https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regression>`_.
+[1] You can find more information in the `Linear Spline Logistic Regression <https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regression>`_.
+
+[2] Additional readings
+
+- Zhang, Jian, and Yiming Yang. `Probabilistic score estimation with piecewise logistic regression <https://pal.sri.com/wp-content/uploads/publications/radar/2004/icml04zhang.pdf>`__. Proceedings of the twenty-first international conference on Machine learning. 2004.
+
 
 Examples
 ------------
