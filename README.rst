@@ -14,13 +14,13 @@ scikit-learn_ compatible
    :target: https://pdm.fming.dev
    :alt: pdm-managed
 
-.. |doc| image:: https://readthedocs.org/projects/splinator/badge/?version=latest
+.. image:: https://readthedocs.org/projects/splinator/badge/?version=latest
     :target: https://splinator.readthedocs.io/en/latest/
     :alt: Documentation Status
 
-.. |github-actions-wheels| image:: https://img.shields.io/github/actions/workflow/status/giampaolo/psutil/.github/workflows/build.yml?label=Linux%2C%20macOS%2C%20Windows
+.. image:: https://img.shields.io/github/actions/workflow/status/affirm/splinator/.github/workflows/python-package.yml
     :target: https://github.com/giampaolo/psutil/actions?query=workflow%3Abuild
-    :alt: Linux, macOS, Windows
+    :alt: Build
 
 Installation
 ------------
