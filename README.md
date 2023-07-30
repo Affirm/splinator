@@ -26,10 +26,11 @@ Regression](https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regr
     learning. 2004.
 
 ## Examples
-| comparison                                     | notebook                                                                                                                 |
-|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| scikit-learn's sigmoid and isotonic regression | [![colab1](path/to/image2)](https://github.com/Affirm/splinator/blob/main/examples/calibrator_model_comparison.ipynb)    |
-| pyGAM’s spline model                           | [![colab2](path/to/image2)](https://githubtocolab.com/Affirm/splinator/blob/main/examples/spline_model_comparison.ipynb) |
+
+| comparison                                     | notebook                                                                                                                                                           |
+|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| scikit-learn's sigmoid and isotonic regression | [![colab1](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/Affirm/splinator/blob/main/examples/calibrator_model_comparison.ipynb)    |
+| pyGAM’s spline model                           | [![colab2](https://colab.research.google.com/assets/colab-badge.svg)](https://githubtocolab.com/Affirm/splinator/blob/main/examples/spline_model_comparison.ipynb) |
 
 ## Development
 
