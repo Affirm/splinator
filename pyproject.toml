@@ -4,6 +4,7 @@ dev = [
     "pytest<8.0.0,>=7.1.2",
     "matplotlib<4.0.0,>=3.5.3",
     "mypy<1.0,>=0.971",
+    "jupyter>=1.0.0",
 ]
 
 [tool.pdm.build]
