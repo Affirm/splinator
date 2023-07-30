@@ -19,7 +19,7 @@ scikit-learn_ compatible
     :alt: Documentation Status
 
 .. image:: https://img.shields.io/github/actions/workflow/status/affirm/splinator/.github/workflows/python-package.yml
-    :target: https://github.com/giampaolo/psutil/actions?query=workflow%3Abuild
+    :target: https://github.com/affirm/splinator/actions
     :alt: Build
 
 Installation
