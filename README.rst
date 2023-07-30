@@ -22,6 +22,10 @@ scikit-learn_ compatible
     :target: https://github.com/affirm/splinator/actions
     :alt: Build
 
+.. |colab| image:: https://colab.research.google.com/assets/colab-badge.svg
+    :target: https://githubtocolab.com/Affirm/splinator/blob/main/examples/spline_model_comparison.ipynb
+    :alt: colab
+
 Installation
 ------------
 
@@ -31,9 +35,14 @@ Algorithm
 ------------
 Coming (Link to medium blog and arxiv PDF)
 
-Releases
+Examples
 ------------
-alpha version in active development. the stable release is expected to arrive by the end of 2022
++------------------------------------------------+----------+
+| comparison                                     | notebook |
++================================================+==========+
+| scikit-learn's sigmoid and isotonic regression | |colab|  |
+| pyGAM’s spline model                           | |colab|  |
++------------------------------------------------+----------+
 
 Development
 ------------
