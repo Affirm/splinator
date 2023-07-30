@@ -10,6 +10,9 @@ Splinator 📈
 
 scikit-learn_ compatible
 
+[![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
+
+
 Installation
 ------------
 
@@ -36,7 +39,7 @@ Example Usage
 
     from splinator.estimators import LinearSplineLogisticRegression
     import numpy as np
-    
+
     # random synthetic dataset
     n_samples = 100
     rng = np.random.RandomState(0)
@@ -46,3 +49,4 @@ Example Usage
     lslr = LinearSplineLogisticRegression(n_knots=10)
     lslr.fit(X, y)
 .. _documentation: https://splinator.readthedocs.io/en/latest/quick_start.html
+

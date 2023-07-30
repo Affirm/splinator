@@ -17,7 +17,6 @@ name = "splinator"
 version = "0.1.1"
 description = "Python library for fitting linear-spine based logistic regression for calibration."
 authors = [
-    {name = "jiaruixu", email = "jiarui.xu@affirm.com"},
     {name = "Jiarui Xu", email = "jiarui.xu@affirm.com"},
 ]
 dependencies = [
@@ -25,9 +24,10 @@ dependencies = [
     "scikit-learn<2.0.0,>=1.0.0",
     "numpy<2.0.0,>=1.19.0",
     "pandas<2.0.0,>=1.3.0",
+    "matplotlib>=3.5.3",
 ]
 requires-python = ">=3.7.1,<4.0"
-readme = "README.md"
+readme = "README.rst"
 license = {text = "BSD-3-Clause"}
 keywords = ["calibration", "logistic", "spline", "regression"]
 classifiers = ["Programming Language :: Python :: 3", "License :: OSI Approved :: BSD License", "Operating System :: OS Independent"]
