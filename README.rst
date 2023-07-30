@@ -10,8 +10,9 @@ Splinator 📈
 
 scikit-learn_ compatible
 
-[![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
-
+.. image:: https://img.shields.io/badge/pdm-managed-blueviolet
+   :target: https://pdm.fming.dev
+   :alt: pdm-managed
 
 Installation
 ------------
