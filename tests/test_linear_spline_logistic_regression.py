@@ -5,11 +5,11 @@ import unittest
 import numpy as np
 from splinator.monotonic_spline import Monotonicity
 from splinator.estimators import LinearSplineLogisticRegression
-from splinator.tests.common import (
+from tests.common import (
     generate_piecewise_function,
     generate_training_data,
 )
-from splinator.tests.test_helpers import assert_allclose_absolute
+from tests.test_helpers import assert_allclose_absolute
 
 
 class TestFitOnSyntheticData(unittest.TestCase):
