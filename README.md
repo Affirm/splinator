@@ -14,16 +14,27 @@
 
 ## Algorithm
 
+Supported models:
+
+- Linear Spline Logistic Regression
+
+Supported metrics:
+
+- Spiegelhalter’s z statistic
+- Expected Calibration Error (ECE)
+
 \[1\] You can find more information in the [Linear Spline Logistic
 Regression](https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regression).
 
 \[2\] Additional readings
 
--   Zhang, Jian, and Yiming Yang. [Probabilistic score estimation with
+- Zhang, Jian, and Yiming Yang. [Probabilistic score estimation with
     piecewise logistic
     regression](https://pal.sri.com/wp-content/uploads/publications/radar/2004/icml04zhang.pdf).
     Proceedings of the twenty-first international conference on Machine
     learning. 2004.
+- Guo, Chuan, et al. "On calibration of modern neural networks." International conference on machine learning. PMLR, 2017.
+
 
 ## Examples
 
