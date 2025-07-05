@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.optimize import LinearConstraint, minimize
-from scipy.special import expit
-from sklearn.utils.extmath import log_logistic
+from scipy.special import expit, log_expit
 from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
 from sklearn.utils.validation import check_array, check_random_state, _check_sample_weight, check_consistent_length
 from sklearn.exceptions import DataConversionWarning, NotFittedError
@@ -44,7 +43,7 @@ class LossGradHess:
         yz = self.y * np.dot(self.X, coefs)
         # P(label= 1 or -1 |X) = 1 / (1+exp(-yz))
         # Log Likelihood = Sum over log ( 1/(1 + exp(-yz)) )
-        loss_val = -np.sum(log_logistic(yz))
+        loss_val = -np.sum(log_expit(yz))
         if self.intercept:
             loss_val += 0.5 * self.alpha * np.dot(coefs[1:], coefs[1:])
         else:
@@ -280,7 +279,8 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             raise NotFittedError(
                 "predict or transform is not available if the estimator was not fitted"
             )
-        X = self._validate_data(X, reset=False)
+        check_params = dict(accept_sparse=False, ensure_2d=False)
+        X = check_array(X, dtype=[np.float64, np.float32], **check_params)
 
         design_X = _get_design_matrix(
             inputs=self.get_input_scores(X),
