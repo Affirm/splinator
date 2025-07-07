@@ -7,16 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-01-07
+
 ### Added
 - `CDFSplineCalibrator` for multi-class probability calibration (based on Gupta et al. 2021 ICLR paper)
 - Comprehensive Sphinx documentation
 - Read the Docs configuration
 - Examples for calibration usage
 - Type hints throughout the codebase
+- Project management files (CONTRIBUTING.md, CHANGELOG.md, MANIFEST.in, setup.cfg)
+- Makefile for common development tasks
+- Improved README with badges and better structure
 
 ### Changed
 - Restructured package: moved estimators to `splinator.estimators` submodule
 - Updated examples to use new API
+- Enhanced project metadata in pyproject.toml
+
+### Fixed
+- Fixed typo in project description ("spine" → "spline")
 
 ## [0.2.0] - 2024-01-XX
 

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "splinator"
-version = "0.2.0"
+version = "0.3.0"
 description = "Python library for fitting linear-spline based logistic regression for calibration."
 authors = [
     {name = "Jiarui Xu", email = "jiarui.xu@affirm.com"},
