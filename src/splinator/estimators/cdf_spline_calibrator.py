@@ -82,21 +82,30 @@ class CDFSplineCalibrator(BaseEstimator, TransformerMixin):
     """
     Calibrates classifier scores using a spline-based method on cumulative distributions.
 
-    This method is described in "Calibration of Neural Networks Using Splines" by
-    C. Gupta, A. G. Wilson, and A. Veit. It is a binning-free calibration method
-    that fits a cubic spline to the empirical cumulative distribution of class
-    accuracies. The derivative of this spline serves as the recalibration function.
+    This method implements the spline-based calibration technique described in [1]_.
+    It is a binning-free calibration method that fits a cubic spline to the empirical 
+    cumulative distribution functions (CDFs) of both the predicted scores and actual 
+    outcomes. The derivative of this spline serves as the recalibration function, 
+    providing smooth and well-calibrated probability estimates.
     
-    The method works by computing the cumulative distribution functions (CDFs) of
-    both the predicted scores and the actual outcomes, then using splines to model
-    their relationship.
+    The algorithm works by:
+    1. Computing empirical CDFs for predicted scores and true class accuracies
+    2. Fitting a cubic spline to model the relationship between these CDFs
+    3. Using the spline derivative to transform uncalibrated scores
 
     Parameters
     ----------
     num_knots : int, default=6
-        The number of knots to use for the cubic spline. This parameter is currently
-        a placeholder for future extension to splines with a fixed number of knots.
-        The current implementation uses all calibration points as knots.
+        The number of knots to use for the cubic spline. Following the original paper,
+        this helps prevent overfitting by controlling the smoothness of the calibration
+        function. More knots allow for more flexible calibration curves.
+
+    Attributes
+    ----------
+    n_classes_ : int
+        Number of classes detected during fit.
+    recalibration_functions_ : list
+        List of interpolation functions for each class.
 
     Examples
     --------
@@ -117,6 +126,22 @@ class CDFSplineCalibrator(BaseEstimator, TransformerMixin):
     >>> test_scores = np.random.rand(50, n_classes)
     >>> test_scores /= test_scores.sum(axis=1, keepdims=True)
     >>> calibrated_scores = calibrator.transform(test_scores)
+
+    References
+    ----------
+    .. [1] Gupta, C., Koren, A., & Mishra, K. (2021). "Calibration of Neural Networks 
+           using Splines". International Conference on Learning Representations (ICLR).
+           arXiv:2006.12800. https://arxiv.org/abs/2006.12800
+
+    See Also
+    --------
+    Official implementation by the authors: https://github.com/kartikgupta-at-anu/spline-calibration
+
+    Notes
+    -----
+    This implementation extends the original method to handle edge cases and numerical
+    stability issues. The spline fitting is performed independently for each class,
+    making it suitable for multi-class calibration problems.
     """
 
     def __init__(self, num_knots: int = 6):

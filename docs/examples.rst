@@ -54,6 +54,7 @@ Here's a complete example of using splinator for probability calibration:
     # ece_before = expected_calibration_error(y_test, proba_uncal[:, 1])
     
     # Calibrate using CDF Spline
+    # This method is based on Gupta et al. (2021) "Calibration of Neural Networks using Splines"
     calibrator = CDFSplineCalibrator(num_knots=6)
     calibrator.fit(lr.predict_proba(X_cal), y_cal)
     
@@ -65,6 +66,12 @@ Here's a complete example of using splinator for probability calibration:
     
     print(f"Calibrated probabilities shape: {proba_cal.shape}")
     print(f"Sum of probabilities per sample (should be 1): {proba_cal.sum(axis=1)[:5]}")
+
+.. note::
+   The CDF Spline Calibration method provides smooth, well-calibrated probabilities
+   by modeling the relationship between predicted scores and true outcomes using 
+   cubic splines. See Gupta et al. (2021) for theoretical details. The authors'
+   official implementation is available at https://github.com/kartikgupta-at-anu/spline-calibration.
 
 Linear Spline Logistic Regression Example
 -----------------------------------------

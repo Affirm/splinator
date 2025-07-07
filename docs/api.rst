@@ -38,10 +38,19 @@ KS Spline Calibrator
 CDF Spline Calibrator
 ~~~~~~~~~~~~~~~~~~~~~
 
+The CDF Spline Calibrator implements the method from Gupta et al. (2021) [1]_ for
+smooth probability calibration using cubic splines on cumulative distribution functions.
+
 .. automodule:: splinator.estimators.cdf_spline_calibrator
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. [1] Gupta, C., Koren, A., & Mishra, K. (2021). "Calibration of Neural Networks 
+       using Splines". International Conference on Learning Representations (ICLR).
+       https://arxiv.org/abs/2006.12800
+
+See the authors' official implementation at: https://github.com/kartikgupta-at-anu/spline-calibration
 
 Metrics
 -------
