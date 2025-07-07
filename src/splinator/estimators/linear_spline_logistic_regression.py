@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import LinearConstraint, minimize
 from scipy.special import expit, log_expit
 from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
-from sklearn.utils.validation import check_array, check_random_state, _check_sample_weight, check_consistent_length
+from sklearn.utils.validation import check_array, check_random_state, check_consistent_length
 from sklearn.exceptions import DataConversionWarning, NotFittedError
 from warnings import warn
 from splinator.monotonic_spline import (
@@ -13,7 +13,7 @@ from splinator.monotonic_spline import (
 )
 from enum import Enum
 import pandas as pd
-from typing import Any, Dict, List, Optional, Union, Iterable, Tuple
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 
 class MinimizationMethod(Enum):
@@ -312,4 +312,4 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         -------
         tags : dict
         """
-        return {"poor_score": True, "binary_only": True, "requires_y": True}
+        return {"poor_score": True, "binary_only": True, "requires_y": True} 

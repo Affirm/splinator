@@ -10,7 +10,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.isotonic import IsotonicRegression
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import brier_score_loss, log_loss
-from splinator.estimators import LinearSplineLogisticRegression
+from splinator.estimators import LinearSplineLogisticRegression, CDFSplineCalibrator
 from splinator.metrics import expected_calibration_error, spiegelhalters_z_statistic
 import time
 import warnings
@@ -49,8 +49,10 @@ def run_comparison(n_samples=50000, n_features=20, n_knots=50):
     clf.fit(X_train, y_train)
     
     # Get uncalibrated predictions
-    pred_cal = clf.predict_proba(X_cal)[:, 1]
-    pred_test = clf.predict_proba(X_test)[:, 1]
+    probas_cal = clf.predict_proba(X_cal)
+    probas_test = clf.predict_proba(X_test)
+    pred_cal = probas_cal[:, 1]
+    pred_test = probas_test[:, 1]
     
     results = []
     
@@ -77,7 +79,18 @@ def run_comparison(n_samples=50000, n_features=20, n_knots=50):
     result['fit_time'] = isotonic_time
     results.append(result)
     
-    # 3. Linear Spline Logistic Regression (Splinator)
+    # 3. CDF Spline Calibrator (Splinator)
+    start = time.time()
+    cdf_cal = CDFSplineCalibrator()  # num_knots=6 by default
+    cdf_cal.fit(probas_cal, y_cal)
+    cdf_calibrated_probas = cdf_cal.transform(probas_test)
+    cdf_calibrated = cdf_calibrated_probas[:, 1]
+    cdf_time = time.time() - start
+    result = evaluate_calibrator(y_test, cdf_calibrated, 'CDFSplineCalibrator')
+    result['fit_time'] = cdf_time
+    results.append(result)
+    
+    # 4. Linear Spline Logistic Regression (Splinator)
     start = time.time()
     lslr = LinearSplineLogisticRegression(
         n_knots=n_knots,
@@ -140,7 +153,7 @@ print("RELATIVE PERFORMANCE (% improvement over Uncalibrated)")
 print("="*80)
 
 uncalibrated_scores = all_results[all_results['method'] == 'Uncalibrated'][['brier_score', 'log_loss', 'ece', 'spiegelhalter_z']].mean()
-for method in ['Sigmoid (sklearn)', 'Isotonic (sklearn)', 'LSLR (n_knots=50)']:
+for method in ['Sigmoid (sklearn)', 'Isotonic (sklearn)', 'CDFSplineCalibrator', 'LSLR (n_knots=50)']:
     method_scores = all_results[all_results['method'] == method][['brier_score', 'log_loss', 'ece', 'spiegelhalter_z']].mean()
     improvement = (uncalibrated_scores - method_scores) / uncalibrated_scores * 100
     print(f"\n{method}:")
