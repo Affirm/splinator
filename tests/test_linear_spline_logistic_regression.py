@@ -54,7 +54,7 @@ class TestFitOnSyntheticData(unittest.TestCase):
 
             exact_knots_model.fit(X_values, y_values)
             assert_allclose_absolute(
-                exact_knots_model.predict(X_values), true_prob_values, atol=0.05, allowed_not_close_fraction=0.05
+                exact_knots_model.transform(X_values), true_prob_values, atol=0.05, allowed_not_close_fraction=0.05
             )
 
     def test_fit_on_piecewise_function_with_only_num_knots(self):
@@ -82,5 +82,5 @@ class TestFitOnSyntheticData(unittest.TestCase):
             )
             fit_n_knots_model.fit(X_values, y_values)
             assert_allclose_absolute(
-                fit_n_knots_model.predict(X_values), true_prob_values, atol=0.08, allowed_not_close_fraction=0.08
+                fit_n_knots_model.transform(X_values), true_prob_values, atol=0.08, allowed_not_close_fraction=0.08
             )

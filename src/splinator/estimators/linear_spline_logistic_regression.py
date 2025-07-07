@@ -1,8 +1,9 @@
 import numpy as np
 from scipy.optimize import LinearConstraint, minimize
 from scipy.special import expit, log_expit
-from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
-from sklearn.utils.validation import check_array, check_random_state, _check_sample_weight, check_consistent_length
+from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
+from sklearn.utils.validation import check_array, check_random_state, check_consistent_length, validate_data, check_is_fitted
+from sklearn.utils.multiclass import type_of_target
 from sklearn.exceptions import DataConversionWarning, NotFittedError
 from warnings import warn
 from splinator.monotonic_spline import (
@@ -13,7 +14,7 @@ from splinator.monotonic_spline import (
 )
 from enum import Enum
 import pandas as pd
-from typing import Any, Dict, List, Optional, Union, Iterable, Tuple
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 
 class MinimizationMethod(Enum):
@@ -69,25 +70,24 @@ class LossGradHess:
         return grad
 
 
-class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstimator):
+class LinearSplineLogisticRegression(ClassifierMixin, TransformerMixin, BaseEstimator):
     """ Piecewise Logistic Regression with Linear Splines
 
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
-
-    Parameters
-    ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    A logistic regression model that uses linear splines to model non-linear relationships.
+    This estimator fits piecewise linear functions in the logit space.
 
     Examples
     --------
     >>> from splinator.estimators import LinearSplineLogisticRegression
     >>> import numpy as np
-    >>> X = np.arange(100).reshape(100, 1)
-    >>> y = np.zeros((100, ))
-    >>> estimator = LinearSplineLogisticRegression()
+    >>> X = np.random.randn(100, 1)
+    >>> y = (X.squeeze() > 0).astype(int)
+    >>> estimator = LinearSplineLogisticRegression(n_knots=5)
     >>> estimator.fit(X, y)
+    >>> # Get predictions
+    >>> y_pred = estimator.predict(X)
+    >>> # Get probability estimates
+    >>> y_proba = estimator.predict_proba(X)
     """
 
     def __init__(
@@ -99,7 +99,7 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             intercept: bool = True,
             method: str = MinimizationMethod.slsqp.value,
             minimizer_options: Dict[str, Any] = None,
-            C: int = 100,
+            C: float = 100.0,
             two_stage_fitting_initial_size: int = None,
             random_state: int = 31,
             verbose=False,
@@ -117,17 +117,17 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             Whether to enforce that the function is monotonically increasing or decreasing.
         intercept : bool, default=True
             If True, allows the function value at x=0 to be nonzero.
-        method : str, default='slsqp'
-             The method named passed to scipy minimize. We have tested two methods: SLSQP and trust-contr.
+        method : str, default='SLSQP'
+             The method named passed to scipy minimize. We have tested two methods: SLSQP and trust-constr.
              For scipy minimize, see https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html
-        minimizer_options : dict, default={}
+        minimizer_options : dict, default=None
             Some scipy minimizer methods have their special options.
             For example: {'disp': True} will display a termination report. {'ftol': 1e-10} sets the precision goal
             for the value of f in the stopping criterion for SLSQP.
             Visit scipy minimize manual for options:
                 (1) https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html
                 (2) https://docs.scipy.org/doc/scipy/reference/optimize.minimize-trustconstr.html
-        C : int, default=100
+        C : float, default=100.0
             Inverse of regularization strength; must be a positive float. Like in support vector machines,
             smaller values specify stronger regularization.
         two_stage_fitting_initial_size : int, default=None
@@ -149,7 +149,16 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         self.verbose = verbose
 
     def _fit(self, X, y, initial_guess=None):
-        # type: (pd.DataFrame, pd.Series, Optional[np.ndarray], bool) -> None
+        # type: (np.ndarray, np.ndarray, Optional[np.ndarray]) -> None
+        
+        # Convert y to numeric 0/1 if it contains string labels
+        # Use self.classes_ to map labels to 0/1
+        if hasattr(self, 'classes_'):
+            y_numeric = np.zeros_like(y, dtype=float)
+            for i, label in enumerate(self.classes_):
+                y_numeric[y == label] = i
+            y = y_numeric
+        
         constraint = []  # type: Union[Dict[str, Any], List, LinearConstraint]
         if self.monotonicity != Monotonicity.none.value:
             # This function returns G and h such that G * beta <= 0 is the constraint we want:
@@ -195,7 +204,7 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             jac=lgh.grad,
             method=self.method,
             constraints=constraint,
-            options=self.minimizer_options,
+            options=self.minimizer_options if self.minimizer_options is not None else {},
         )
         self.result_ = result
         optimization_message = "The minimization failed with message: '{message}'".format(message=result.message)
@@ -206,18 +215,16 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         self.coefficients_ = result.x
 
     def get_input_scores(self, X):
-        if X.ndim > 1:
-            input_scores = X[:, self.input_score_column_index]
-        else:
-            input_scores = X
-        return input_scores
+        # X is always 2D now
+        return X[:, self.input_score_column_index]
 
     def get_additional_columns(self, X):
+        # X is always 2D now
         additional_columns = np.delete(X, self.input_score_column_index, axis=1)
         return additional_columns
 
     def fit(self, X, y):
-        # type: (pd.DataFrame, Union[np.ndarray, pd.Series], Optional[np.ndarray]) -> None
+        # type: (Union[np.ndarray, pd.DataFrame], Union[np.ndarray, pd.Series]) -> LinearSplineLogisticRegression
         """
         When the dataset is too large, we choose to use a random subset of the data to do an initial fit;
         Then we take the coefficients as initial guess to fit again using the entire dataset. This will speed
@@ -225,23 +232,42 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         We use two_stage_fitting_size as the sampling size.
         """
         self.random_state_ = check_random_state(self.random_state)
-        check_params = dict(accept_sparse=False, ensure_2d=False)
+        
+        # Use validate_data for proper sklearn compatibility
+        # Enforce 2D input for sklearn compliance
+        X, y = validate_data(self, X, y, accept_sparse=False, ensure_2d=True, 
+                           dtype=[np.float64, np.float32])
+        self.n_features_in_ = X.shape[1]
 
-        X = check_array(X, dtype=[np.float64, np.float32], **check_params)
-        self.n_features_in_ = 1 if X.ndim == 1 else X.shape[1]
-
-        if y is None:
-            raise ValueError("y should be a 1d array")
-        y = check_array(y, dtype=X.dtype, **check_params)
         if y.ndim > 1:
             warn(
                 "A column-vector y was passed when a 1d array was expected.",
                 DataConversionWarning,
             )
             y = y[:, 0]
-
-        check_consistent_length(X, y)
-
+        
+        # Set classes_ attribute for sklearn compatibility
+        self.classes_ = np.unique(y)
+        
+        # Handle single-class case
+        if len(self.classes_) == 1:
+            # Store the single class for prediction
+            self.single_class_ = True
+            self.coefficients_ = np.array([0.0])  # Dummy coefficients
+            self.knots_ = np.array([])  # No knots needed
+            return self
+        
+        # Check target type following sklearn's suggested pattern
+        y_type = type_of_target(y, input_name='y', raise_unknown=True)
+        if y_type != 'binary':
+            raise ValueError(
+                'Only binary classification is supported. The type of the target '
+                f'is {y_type}.'
+            )
+        
+        # Remove single_class_ flag for normal binary case
+        self.single_class_ = False
+        
         if self.n_knots and self.knots is None:
             # only n_knots given so we create knots
             self.n_knots_ = min([self.n_knots, X.shape[0]])
@@ -253,7 +279,7 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             raise ValueError("knots and n_knots cannot be both null or non-null")
 
         if self.method not in ['SLSQP', 'trust-constr']:
-            raise ValueError("optimization method can only be either 'SLSQP' or 'trust-contr'")
+            raise ValueError("optimization method can only be either 'SLSQP' or 'trust-constr'")
 
         if self.two_stage_fitting_initial_size is None:
             self._fit(X, y, initial_guess=None)
@@ -275,12 +301,19 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         return self
 
     def transform(self, X):
-        if not self.is_fitted:
-            raise NotFittedError(
-                "predict or transform is not available if the estimator was not fitted"
-            )
-        check_params = dict(accept_sparse=False, ensure_2d=False)
-        X = check_array(X, dtype=[np.float64, np.float32], **check_params)
+        # Check if fitted
+        check_is_fitted(self, 'coefficients_')
+        
+        # Handle single-class case
+        if hasattr(self, 'single_class_') and self.single_class_:
+            # Return probabilities of 1.0 for the single class
+            X = check_array(X, accept_sparse=False, ensure_2d=True,
+                          dtype=[np.float64, np.float32])
+            return np.ones(X.shape[0])
+        
+        # Use validate_data to ensure consistency with fitted data
+        X = validate_data(self, X, accept_sparse=False, ensure_2d=True,
+                        dtype=[np.float64, np.float32], reset=False)
 
         design_X = _get_design_matrix(
             inputs=self.get_input_scores(X),
@@ -291,13 +324,27 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         return expit(np.dot(design_X, self.coefficients_))
 
     def predict(self, X):
-        return self.transform(X)
+        # Handle single-class case
+        if hasattr(self, 'single_class_') and self.single_class_:
+            X = check_array(X, accept_sparse=False, ensure_2d=True,
+                          dtype=[np.float64, np.float32])
+            n_samples = X.shape[0]
+            return np.full(n_samples, self.classes_[0])
+        
+        probabilities = self.transform(X)
+        # Use classes_ to map predictions to actual class labels
+        class_indices = (probabilities >= 0.5).astype(int)
+        return self.classes_[class_indices]
+
+    def predict_proba(self, X):
+        """Return probability estimates for the positive class."""
+        proba_one = self.transform(X)
+        return np.column_stack([1 - proba_one, proba_one])
 
     @property
     def is_fitted(self) -> bool:
         """
         Check if the model is fitted by checking if it has 'coefficients_' attribute
-
         Returns
         -------
         is_fitted : bool
@@ -306,10 +353,26 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
 
     def _more_tags(self) -> Dict[str, bool]:
         """
-        Override default sklearn tags (sklearn.utils._DEFAULT_TAGS)
-
+        Override default sklearn tags (sklearn.utils._DEFAULT_TAGS) for sklearn < 1.6
         Returns
         -------
         tags : dict
         """
         return {"poor_score": True, "binary_only": True, "requires_y": True}
+    
+    def __sklearn_tags__(self):
+        """
+        Define sklearn tags for scikit-learn >= 1.6
+        
+        Returns
+        -------
+        tags : sklearn.utils.Tags
+        """
+        tags = super().__sklearn_tags__()
+        # Set multi_class=False to indicate binary_only=True
+        if hasattr(tags, 'classifier_tags') and tags.classifier_tags is not None:
+            tags.classifier_tags.multi_class = False
+            tags.classifier_tags.poor_score = True
+        if hasattr(tags, 'target_tags') and tags.target_tags is not None:
+            tags.target_tags.required = True
+        return tags 
