@@ -63,7 +63,7 @@ class _InterpolatedFunction:
         idx = bisect_left(self.x, x_new)
 
         # Handle cases where x_new is exactly one of the points
-        if self.x[idx] == x_new:
+        if idx < len(self.x) and self.x[idx] == x_new:
             return self.y[idx]
 
         x_before, y_before = self.x[idx - 1], self.y[idx - 1]
