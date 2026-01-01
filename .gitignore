@@ -164,5 +164,8 @@ cython_debug/
 .DS_Store
 .idea/
 
+# Cursor IDE
+.cursor/
+
 # Local issue drafts
 .github/ISSUES/
