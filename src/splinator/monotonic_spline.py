@@ -125,10 +125,65 @@ def _get_design_matrix(
     ).astype(float)
 
 
-def _fit_knots(X, num_knots):
-    # type: (np.ndarray, int) -> np.ndarray
+def _weighted_quantile(values, quantiles, sample_weight=None):
+    # type: (np.ndarray, np.ndarray, Optional[np.ndarray]) -> np.ndarray
     """
-    Generates knots by finding `num_knots` quantiles of the given input distribution
+    Compute weighted quantiles.
+    
+    Parameters
+    ----------
+    values : array-like
+        Values to compute quantiles for.
+    quantiles : array-like
+        Quantiles to compute, in [0, 1].
+    sample_weight : array-like, optional
+        Weights for each value.
+        
+    Returns
+    -------
+    result : ndarray
+        Quantile values.
+    """
+    values = np.asarray(values)
+    quantiles = np.asarray(quantiles)
+    
+    if sample_weight is None:
+        return np.quantile(values, quantiles)
+    
+    sample_weight = np.asarray(sample_weight)
+    sorted_indices = np.argsort(values)
+    sorted_values = values[sorted_indices]
+    sorted_weights = sample_weight[sorted_indices]
+    cumsum = np.cumsum(sorted_weights)
+    cumsum_normalized = cumsum / cumsum[-1]
+    result = np.zeros(len(quantiles))
+    for i, q in enumerate(quantiles):
+        idx = np.searchsorted(cumsum_normalized, q)
+        if idx >= len(sorted_values):
+            idx = len(sorted_values) - 1
+        result[i] = sorted_values[idx]
+    
+    return result
+
+
+def _fit_knots(X, num_knots, sample_weight=None):
+    # type: (np.ndarray, int, Optional[np.ndarray]) -> np.ndarray
+    """
+    Generates knots by finding `num_knots` quantiles of the given input distribution.
+    
+    Parameters
+    ----------
+    X : ndarray
+        1-D array of input values.
+    num_knots : int
+        Number of knots to generate.
+    sample_weight : ndarray, optional
+        Sample weights for weighted quantile computation.
+        
+    Returns
+    -------
+    knots : ndarray
+        Knot positions at evenly-spaced quantiles.
     """
     if len(X.shape) != 1:
         raise ValueError("X must be a vector; has shape {}".format(X.shape))
@@ -139,5 +194,6 @@ def _fit_knots(X, num_knots):
         )
 
     percentiles = np.linspace(0, 100, num_knots, endpoint=False)[1:]
+    quantiles = percentiles / 100.0
 
-    return np.percentile(X, percentiles)
+    return _weighted_quantile(X, quantiles, sample_weight)

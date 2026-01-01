@@ -128,12 +128,13 @@ class TestStratifiedSampling(unittest.TestCase):
         model.random_state_ = np.random.RandomState(42)
         model.input_score_column_index = 0
         
-        X_sub, y_sub, indices = model._stratified_subsample(
+        X_sub, y_sub, weight_sub, indices = model._stratified_subsample(
             self.X, self.y, n_samples=100, n_strata=10
         )
         
         self.assertEqual(len(X_sub), 100)
         self.assertEqual(len(y_sub), 100)
+        self.assertIsNone(weight_sub)
         
         # Check coverage
         original_range = np.ptp(self.X[:, 0])
