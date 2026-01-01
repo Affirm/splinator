@@ -13,7 +13,7 @@ post-hoc calibration.
 
 References
 ----------
-.. [1] Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early Stopping:
+.. [1] Berta, E., Holzmüller, D., Jordan, M. I., & Bach, F. (2025). Rethinking Early Stopping:
        Refine, Then Calibrate. arXiv preprint arXiv:2501.19195.
        https://arxiv.org/abs/2501.19195
 """
@@ -44,11 +44,6 @@ def expected_calibration_error(labels, preds, n_bins=10):
     diff = np.array(fop) - np.array(mpv)
     ece = sum([abs(delta) for delta in diff]) / float(n_bins)
     return ece
-
-
-# =============================================================================
-# TS-Refinement Metrics (Variational Loss Decomposition)
-# =============================================================================
 
 
 def ts_refinement_loss(y_true, y_pred, sample_weight=None):
@@ -114,7 +109,7 @@ def ts_refinement_loss(y_true, y_pred, sample_weight=None):
     See Also
     --------
     calibration_loss : The "fixable" portion of the loss
-    loss_decomposition : Complete decomposition with all components
+    logloss_decomposition : Complete decomposition with all components
     make_metric_wrapper : Factory to create framework-specific wrappers
     """
     y_true = np.asarray(y_true)
@@ -182,6 +177,81 @@ def ts_brier_refinement(y_true, y_pred, sample_weight=None):
         return float(np.average((y_true - calibrated) ** 2, weights=sample_weight))
 
 
+def spline_refinement_loss(y_true, y_pred, n_knots=5, C=1.0, sample_weight=None):
+    """Refinement Error: Cross-entropy AFTER piecewise spline recalibration.
+    
+    Uses splinator's LinearSplineLogisticRegression as the recalibrator.
+    
+    Compared to ts_refinement_loss (1 parameter), this uses a piecewise linear
+    calibrator with more flexibility. Use fewer knots (2-3) and strong
+    regularization (C=1) for stable early stopping signals.
+    
+    Parameters
+    ----------
+    y_true : array-like of shape (n_samples,)
+        True binary labels (0 or 1).
+    y_pred : array-like of shape (n_samples,)
+        Predicted probabilities in (0, 1).
+    n_knots : int, default=5
+        Number of knots for the piecewise calibrator.
+        Fewer knots = more stable for early stopping.
+    C : float, default=1.0
+        Inverse regularization strength. Smaller = more regularization.
+        Use C=1 or lower for early stopping stability.
+    sample_weight : array-like of shape (n_samples,), optional
+        Sample weights (note: currently not passed to spline fitting).
+        
+    Returns
+    -------
+    refinement_loss : float
+        Cross-entropy after optimal piecewise spline recalibration.
+        
+    Examples
+    --------
+    >>> from splinator import spline_refinement_loss
+    >>> loss = spline_refinement_loss(y_val, model_probs, n_knots=5, C=1.0)
+    
+    Notes
+    -----
+    For early stopping, prefer ts_refinement_loss (1 parameter) for maximum
+    stability. Use spline_refinement_loss when you want the recalibrator
+    to match what you'll use post-hoc (LinearSplineLogisticRegression).
+    
+    See Also
+    --------
+    ts_refinement_loss : Temperature scaling version (more stable, 1 param)
+    LinearSplineLogisticRegression : The piecewise calibrator used here
+    
+    References
+    ----------
+    .. [1] Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early
+           Stopping: Refine, Then Calibrate. arXiv:2501.19195.
+    """
+    from splinator.estimators import LinearSplineLogisticRegression
+    
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+    
+    # Clip predictions to avoid numerical issues
+    eps = 1e-15
+    y_pred = np.clip(y_pred, eps, 1 - eps)
+    
+    # Fit piecewise spline calibrator
+    calibrator = LinearSplineLogisticRegression(
+        n_knots=n_knots,
+        C=C,
+        monotonicity='increasing',
+    )
+    calibrator.fit(y_pred.reshape(-1, 1), y_true)
+    calibrated = calibrator.predict_proba(y_pred.reshape(-1, 1))[:, 1]
+    
+    # Clip calibrated predictions
+    calibrated = np.clip(calibrated, eps, 1 - eps)
+    
+    # Compute cross-entropy
+    return _weighted_cross_entropy(y_true, calibrated, sample_weight)
+
+
 def calibration_loss(y_true, y_pred, sample_weight=None):
     """Calibration Error: The "fixable" portion of the loss.
     
@@ -216,7 +286,7 @@ def calibration_loss(y_true, y_pred, sample_weight=None):
     See Also
     --------
     ts_refinement_loss : The irreducible portion of the loss
-    loss_decomposition : Complete decomposition with all components
+    logloss_decomposition : Complete decomposition with all components
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
@@ -227,11 +297,11 @@ def calibration_loss(y_true, y_pred, sample_weight=None):
     return total - refinement
 
 
-def loss_decomposition(y_true, y_pred, sample_weight=None):
-    """Decompose total loss into refinement and calibration components.
+def logloss_decomposition(y_true, y_pred, sample_weight=None):
+    """Decompose log loss (cross-entropy) into refinement and calibration.
     
     Based on the variational approach from "Rethinking Early Stopping:
-    Refine, Then Calibrate". This decomposes cross-entropy loss as:
+    Refine, Then Calibrate". This decomposes log loss as:
     
         Total Loss = Refinement Loss + Calibration Loss
     
@@ -252,7 +322,7 @@ def loss_decomposition(y_true, y_pred, sample_weight=None):
     -------
     decomposition : dict
         Dictionary containing:
-        - 'total_loss': Total cross-entropy loss
+        - 'total_loss': Total log loss (cross-entropy)
         - 'refinement_loss': Irreducible loss after calibration
         - 'calibration_loss': Fixable portion (total - refinement)
         - 'calibration_fraction': Fraction of loss due to miscalibration
@@ -263,7 +333,7 @@ def loss_decomposition(y_true, y_pred, sample_weight=None):
     >>> import numpy as np
     >>> y_true = np.array([0, 0, 1, 1])
     >>> y_pred = np.array([0.1, 0.3, 0.7, 0.9])
-    >>> decomp = loss_decomposition(y_true, y_pred)
+    >>> decomp = logloss_decomposition(y_true, y_pred)
     >>> print(f"Total: {decomp['total_loss']:.4f}")
     >>> print(f"Refinement: {decomp['refinement_loss']:.4f}")
     >>> print(f"Calibration: {decomp['calibration_loss']:.4f} ({decomp['calibration_fraction']:.1%})")
@@ -274,7 +344,7 @@ def loss_decomposition(y_true, y_pred, sample_weight=None):
     >>> for epoch in range(max_epochs):
     ...     model.partial_fit(X_train, y_train)
     ...     val_probs = model.predict_proba(X_val)[:, 1]
-    ...     decomp = loss_decomposition(y_val, val_probs)
+    ...     decomp = logloss_decomposition(y_val, val_probs)
     ...     history['epoch'].append(epoch)
     ...     history['total'].append(decomp['total_loss'])
     ...     history['refinement'].append(decomp['refinement_loss'])
@@ -317,21 +387,6 @@ def loss_decomposition(y_true, y_pred, sample_weight=None):
         'calibration_fraction': float(calibration_fraction),
         'optimal_temperature': float(T_opt),
     }
-
-
-# =============================================================================
-# Brier Score Decomposition (Spiegelhalter 1986)
-# =============================================================================
-# 
-# The Brier score can be algebraically decomposed WITHOUT optimization:
-#   Brier = Reliability - Resolution + Uncertainty
-# 
-# Where:
-#   - Reliability (Calibration): how close predictions are to observed frequencies
-#   - Resolution: how much predictions deviate from base rate (discrimination)
-#   - Uncertainty: entropy of the base rate (irreducible)
-# 
-# This is faster and more numerically stable than the log-loss/TS approach.
 
 
 def brier_decomposition(y_true, y_pred, sample_weight=None):
@@ -417,8 +472,6 @@ def brier_decomposition(y_true, y_pred, sample_weight=None):
     else:
         brier_score = np.average((y_true - y_pred) ** 2, weights=weights)
     
-    # === VARIATIONAL DECOMPOSITION (Berta et al. 2025) ===
-    # Refinement = min_g E[(y - g(p))²]
     from sklearn.isotonic import IsotonicRegression
     iso = IsotonicRegression(out_of_bounds='clip')
     sorted_idx = np.argsort(y_pred)
@@ -434,11 +487,8 @@ def brier_decomposition(y_true, y_pred, sample_weight=None):
     else:
         refinement = np.average((y_true - calibrated) ** 2, weights=weights)
     
-    # Calibration = Brier - Refinement (fixable portion)
     calibration = brier_score - refinement
     
-    # === SPIEGELHALTER'S ALGEBRAIC TERMS (for reference) ===
-    # These are NOT the same as variational refinement on raw predictions!
     if weights is None:
         calibration_term = np.mean((y_true - y_pred) * (1 - 2 * y_pred))
         spread_term = np.mean(y_pred * (1 - y_pred))
@@ -448,12 +498,10 @@ def brier_decomposition(y_true, y_pred, sample_weight=None):
     
     return {
         'brier_score': float(brier_score),
-        # Variational decomposition (correct for early stopping)
-        'refinement': float(refinement),              # Brier after recalibration
-        'calibration': float(calibration),            # Fixable portion
-        # Spiegelhalter's algebraic terms (for reference)
-        'calibration_term': float(calibration_term),  # E[(x-p)(1-2p)]
-        'spread_term': float(spread_term),            # E[p(1-p)] - NOT refinement!
+        'refinement': float(refinement),
+        'calibration': float(calibration),
+        'calibration_term': float(calibration_term),
+        'spread_term': float(spread_term),
     }
 
 

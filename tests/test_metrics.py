@@ -8,7 +8,7 @@ from splinator.metrics import (
     spiegelhalters_z_statistic,
     ts_refinement_loss,
     calibration_loss,
-    loss_decomposition,
+    logloss_decomposition,
 )
 from splinator.metric_wrappers import make_metric_wrapper
 import unittest
@@ -38,11 +38,6 @@ class TestMetrics(unittest.TestCase):
         # ece should be 0.5*(0.08+0.06) = 0.07
         ece = expected_calibration_error(labels, scores, n_bins=2)
         self.assertAlmostEqual(0.07, ece, places=3)
-
-
-# =============================================================================
-# TS-Refinement Metrics Tests
-# =============================================================================
 
 
 class TestTSRefinementLoss:
@@ -126,14 +121,14 @@ class TestCalibrationLoss:
 
 
 class TestLossDecomposition:
-    """Tests for loss_decomposition function."""
+    """Tests for logloss_decomposition function."""
     
     def test_returns_all_keys(self):
         """Should return dict with all expected keys."""
         y_true = np.array([0, 0, 1, 1])
         y_pred = np.array([0.1, 0.3, 0.7, 0.9])
         
-        result = loss_decomposition(y_true, y_pred)
+        result = logloss_decomposition(y_true, y_pred)
         
         assert 'total_loss' in result
         assert 'refinement_loss' in result
@@ -146,7 +141,7 @@ class TestLossDecomposition:
         y_true = np.array([0, 0, 1, 1])
         y_pred = np.array([0.2, 0.4, 0.6, 0.8])
         
-        result = loss_decomposition(y_true, y_pred)
+        result = logloss_decomposition(y_true, y_pred)
         
         expected_total = result['refinement_loss'] + result['calibration_loss']
         np.testing.assert_almost_equal(
@@ -158,7 +153,7 @@ class TestLossDecomposition:
         y_true = np.array([0, 0, 1, 1])
         y_pred = np.array([0.1, 0.3, 0.7, 0.9])
         
-        result = loss_decomposition(y_true, y_pred)
+        result = logloss_decomposition(y_true, y_pred)
         
         assert 0 <= result['calibration_fraction'] <= 1
     
@@ -167,7 +162,7 @@ class TestLossDecomposition:
         y_true = np.array([0, 0, 1, 1])
         y_pred = np.array([0.1, 0.3, 0.7, 0.9])
         
-        result = loss_decomposition(y_true, y_pred)
+        result = logloss_decomposition(y_true, y_pred)
         
         assert result['optimal_temperature'] > 0
 

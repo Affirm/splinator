@@ -3,12 +3,11 @@ from .estimators import LinearSplineLogisticRegression
 from .metrics import (
     expected_calibration_error,
     spiegelhalters_z_statistic,
-    # Log-loss decomposition (via Temperature Scaling)
     ts_refinement_loss,
-    ts_brier_refinement,  # Brier after TS (for fair comparison)
+    ts_brier_refinement,
+    spline_refinement_loss,
     calibration_loss,
-    loss_decomposition,
-    # Brier score decomposition (Berta et al. 2025)
+    logloss_decomposition,
     brier_decomposition,
     brier_refinement_score,
     brier_calibration_score,
@@ -23,26 +22,20 @@ from .temperature_scaling import (
 
 __all__ = [
     "__version__",
-    # Estimators
     "LinearSplineLogisticRegression",
     "TemperatureScaling",
-    # Calibration metrics
     "expected_calibration_error",
     "spiegelhalters_z_statistic",
-    # Log-loss decomposition (via Temperature Scaling)
     "ts_refinement_loss",
-    "ts_brier_refinement",  # Brier after TS (for fair comparison)
+    "ts_brier_refinement",
+    "spline_refinement_loss",
     "calibration_loss",
-    "loss_decomposition",
-    # Brier score decomposition (Berta et al. 2025)
+    "logloss_decomposition",
     "brier_decomposition",
     "brier_refinement_score",
     "brier_calibration_score",
-    # Wrapper factory
     "make_metric_wrapper",
-    # Temperature scaling utilities
     "find_optimal_temperature",
     "apply_temperature_scaling",
-    # Enums
     "Monotonicity",
 ]

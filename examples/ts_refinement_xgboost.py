@@ -26,7 +26,7 @@ stopping stops too early (8 iterations) while TS-Refinement correctly trains
 much longer (400+ iterations) for better discrimination.
 
 References:
-    Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early Stopping:
+    Berta, E., Holzmüller, D., Jordan, M. I., & Bach, F. (2025). Rethinking Early Stopping:
     Refine, Then Calibrate. arXiv preprint arXiv:2501.19195.
     https://arxiv.org/abs/2501.19195
 
@@ -58,7 +58,7 @@ from splinator import (
     ts_refinement_loss,
     ts_brier_refinement,  # Brier after TS (for fair comparison)
     calibration_loss,
-    loss_decomposition,
+    logloss_decomposition,
     TemperatureScaling,
     # Brier-based decomposition (Berta et al. 2025)
     brier_decomposition,
@@ -410,7 +410,7 @@ def evaluate_model(y_true, y_pred, name):
     }
     
     # Log-loss decomposition (via Temperature Scaling)
-    ts_decomp = loss_decomposition(y_true, y_pred)
+    ts_decomp = logloss_decomposition(y_true, y_pred)
     metrics['TS-Refinement'] = ts_decomp['refinement_loss']
     metrics['TS-Calibration'] = ts_decomp['calibration_loss']
     
