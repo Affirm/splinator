@@ -2,7 +2,7 @@ import numpy as np
 from scipy.optimize import LinearConstraint, minimize
 from scipy.special import expit, log_expit
 from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
-from sklearn.utils.validation import check_array, check_random_state, _check_sample_weight, check_consistent_length
+from sklearn.utils.validation import check_random_state, validate_data
 from sklearn.exceptions import DataConversionWarning, NotFittedError
 from warnings import warn
 from splinator.monotonic_spline import (
@@ -70,15 +70,46 @@ class LossGradHess:
 
 
 class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstimator):
-    """ Piecewise Logistic Regression with Linear Splines
+    """Piecewise Logistic Regression with Linear Splines.
 
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
+    A scikit-learn compatible estimator that fits a piecewise linear function
+    in log-odds space for probability calibration. Supports monotonicity
+    constraints and L2 regularization.
 
     Parameters
     ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    input_score_column_index : int, default=0
+        Index of the column in X to use as the primary input score for spline fitting.
+    n_knots : int or None, default=100
+        Number of knots to automatically place at quantiles of the input distribution.
+        Only one of `knots` and `n_knots` should be provided.
+    knots : array-like of float or None, default=None
+        Explicit knot positions. Only one of `knots` and `n_knots` should be provided.
+    monotonicity : str, default='none'
+        Monotonicity constraint: 'none', 'increasing', or 'decreasing'.
+    intercept : bool, default=True
+        Whether to include an intercept term in the model.
+    method : str, default='SLSQP'
+        Optimization method for scipy.optimize.minimize. Supports 'SLSQP' or 'trust-constr'.
+    minimizer_options : dict or None, default=None
+        Additional options passed to the scipy minimizer.
+    C : float, default=100
+        Inverse of regularization strength (larger values = weaker regularization).
+    two_stage_fitting_initial_size : int or None, default=None
+        If provided, performs initial fit on a subsample of this size for faster convergence.
+    random_state : int, default=31
+        Random seed for reproducibility.
+    verbose : bool, default=False
+        Whether to print verbose output during fitting.
+
+    Attributes
+    ----------
+    coefficients_ : ndarray
+        Fitted coefficients after training.
+    knots_ : ndarray
+        The knot positions used in the model.
+    n_features_in_ : int
+        Number of features seen during fit.
 
     Examples
     --------
@@ -98,7 +129,7 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             monotonicity: str = Monotonicity.none.value,
             intercept: bool = True,
             method: str = MinimizationMethod.slsqp.value,
-            minimizer_options: Dict[str, Any] = None,
+            minimizer_options: Optional[Dict[str, Any]] = None,
             C: int = 100,
             two_stage_fitting_initial_size: int = None,
             random_state: int = 31,
@@ -195,7 +226,7 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             jac=lgh.grad,
             method=self.method,
             constraints=constraint,
-            options=self.minimizer_options,
+            options=self.minimizer_options or {},
         )
         self.result_ = result
         optimization_message = "The minimization failed with message: '{message}'".format(message=result.message)
@@ -225,22 +256,25 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         We use two_stage_fitting_size as the sampling size.
         """
         self.random_state_ = check_random_state(self.random_state)
-        check_params = dict(accept_sparse=False, ensure_2d=False)
 
-        X = check_array(X, dtype=[np.float64, np.float32], **check_params)
-        self.n_features_in_ = 1 if X.ndim == 1 else X.shape[1]
+        # Validate X and y, this sets n_features_in_ automatically
+        X, y = validate_data(
+            self,
+            X,
+            y,
+            accept_sparse=False,
+            ensure_2d=True,
+            dtype=[np.float64, np.float32],
+            y_numeric=True,
+            multi_output=False,
+        )
 
-        if y is None:
-            raise ValueError("y should be a 1d array")
-        y = check_array(y, dtype=X.dtype, **check_params)
         if y.ndim > 1:
             warn(
                 "A column-vector y was passed when a 1d array was expected.",
                 DataConversionWarning,
             )
             y = y[:, 0]
-
-        check_consistent_length(X, y)
 
         if self.n_knots and self.knots is None:
             # only n_knots given so we create knots
@@ -253,7 +287,7 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             raise ValueError("knots and n_knots cannot be both null or non-null")
 
         if self.method not in ['SLSQP', 'trust-constr']:
-            raise ValueError("optimization method can only be either 'SLSQP' or 'trust-contr'")
+            raise ValueError("optimization method can only be either 'SLSQP' or 'trust-constr'")
 
         if self.two_stage_fitting_initial_size is None:
             self._fit(X, y, initial_guess=None)
@@ -279,8 +313,16 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
             raise NotFittedError(
                 "predict or transform is not available if the estimator was not fitted"
             )
-        check_params = dict(accept_sparse=False, ensure_2d=False)
-        X = check_array(X, dtype=[np.float64, np.float32], **check_params)
+
+        # Validate X and check n_features_in_ consistency
+        X = validate_data(
+            self,
+            X,
+            accept_sparse=False,
+            ensure_2d=True,
+            dtype=[np.float64, np.float32],
+            reset=False,
+        )
 
         design_X = _get_design_matrix(
             inputs=self.get_input_scores(X),
@@ -304,9 +346,31 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         """
         return hasattr(self, 'coefficients_')
 
+    def __sklearn_tags__(self):
+        """
+        Define sklearn tags for scikit-learn >= 1.6.
+
+        Returns
+        -------
+        tags : sklearn.utils.Tags
+        """
+        from sklearn.utils import Tags, TargetTags, InputTags, RegressorTags
+
+        tags = super().__sklearn_tags__()
+        tags.target_tags = TargetTags(
+            required=True,
+            one_d_labels=True,
+            two_d_labels=False,
+            positive_only=False,
+            multi_output=False,
+            single_output=True,
+        )
+        tags.regressor_tags = RegressorTags(poor_score=True)
+        return tags
+
     def _more_tags(self) -> Dict[str, bool]:
         """
-        Override default sklearn tags (sklearn.utils._DEFAULT_TAGS)
+        Override default sklearn tags for scikit-learn < 1.6.
 
         Returns
         -------

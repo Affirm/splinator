@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 from typing import TYPE_CHECKING, NamedTuple
 import itertools
 import numpy as np
+import pandas as pd
 
 from splinator.monotonic_spline import Monotonicity
 from splinator.estimators import LinearSplineLogisticRegression, MinimizationMethod

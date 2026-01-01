@@ -8,4 +8,4 @@ from sklearn.utils.estimator_checks import check_estimator
     [LinearSplineLogisticRegression()]
 )
 def test_all_estimators(estimator):
-    return check_estimator(estimator)
+    check_estimator(estimator)
