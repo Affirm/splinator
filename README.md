@@ -4,7 +4,7 @@
 
 [scikit-learn](https://scikit-learn.org) compatible
 
-[![pdm-managed](https://img.shields.io/badge/pdm-managed-blueviolet)](https://pdm.fming.dev)
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Documentation Status](https://readthedocs.org/projects/splinator/badge/?version=latest)](https://splinator.readthedocs.io/en/latest/)
 [![Build](https://img.shields.io/github/actions/workflow/status/affirm/splinator/.github/workflows/python-package.yml)](https://github.com/affirm/splinator/actions)
 
@@ -45,9 +45,21 @@ Regression](https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regr
 
 ## Development
 
-The dependencies are managed by [pdm](https://pdm.fming.dev/latest/)
+The dependencies are managed by [uv](https://github.com/astral-sh/uv).
 
-To run tests, run `pdm run -v pytest tests`
+```bash
+# Install uv (if not already installed)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create virtual environment and install dependencies
+uv sync --dev
+
+# Run tests
+uv run pytest tests -v
+
+# Run type checking
+uv run mypy src/splinator
+```
 
 ## Example Usage
 
