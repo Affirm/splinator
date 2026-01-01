@@ -4,6 +4,9 @@
 
 [scikit-learn](https://scikit-learn.org) compatible
 
+[![PyPI version](https://img.shields.io/pypi/v/splinator)](https://pypi.org/project/splinator/)
+[![Downloads](https://static.pepy.tech/badge/splinator)](https://pepy.tech/project/splinator)
+[![Downloads/Month](https://static.pepy.tech/badge/splinator/month)](https://pepy.tech/project/splinator)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Documentation Status](https://readthedocs.org/projects/splinator/badge/?version=latest)](https://splinator.readthedocs.io/en/latest/)
 [![Build](https://img.shields.io/github/actions/workflow/status/affirm/splinator/.github/workflows/python-package.yml)](https://github.com/affirm/splinator/actions)
@@ -20,8 +23,30 @@ Supported models:
 
 Supported metrics:
 
-- Spiegelhalter’s z statistic
+- Spiegelhalter's z statistic
 - Expected Calibration Error (ECE)
+- **TS-Refinement Loss** - Loss after optimal temperature scaling (for early stopping)
+- **Brier Score Decomposition** - Refinement and calibration components
+
+## TS-Refinement Early Stopping
+
+Based on ["Rethinking Early Stopping: Refine, Then Calibrate"](https://arxiv.org/abs/2501.19195), splinator provides metrics for the "refine, then calibrate" training paradigm:
+
+```python
+from splinator import ts_refinement_loss, TemperatureScaling
+
+# Use refinement loss for early stopping (train longer for better discrimination)
+ref_loss = ts_refinement_loss(y_val, model.predict_proba(X_val)[:, 1])
+
+# Apply temperature scaling post-hoc to fix calibration
+ts = TemperatureScaling()
+ts.fit(val_probs.reshape(-1, 1), y_val)
+calibrated_probs = ts.predict(test_probs.reshape(-1, 1))
+```
+
+See [`examples/ts_refinement_xgboost.py`](examples/ts_refinement_xgboost.py) for a complete example.
+
+## References
 
 \[1\] You can find more information in the [Linear Spline Logistic
 Regression](https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regression).
@@ -34,6 +59,11 @@ Regression](https://github.com/Affirm/splinator/wiki/Linear-Spline-Logistic-Regr
     Proceedings of the twenty-first international conference on Machine
     learning. 2004.
 - Guo, Chuan, et al. "On calibration of modern neural networks." International conference on machine learning. PMLR, 2017.
+- Berta, M., Ciobanu, S., & Heusinger, M. (2025). [Rethinking Early Stopping: Refine, Then Calibrate](https://arxiv.org/abs/2501.19195). arXiv:2501.19195.
+
+\[3\] Related projects
+
+- [probmetrics](https://github.com/dholzmueller/probmetrics) - PyTorch-based classification metrics and post-hoc calibration (by the authors of the refinement paper)
 
 
 ## Examples

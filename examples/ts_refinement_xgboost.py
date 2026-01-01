@@ -26,7 +26,9 @@ stopping stops too early (8 iterations) while TS-Refinement correctly trains
 much longer (400+ iterations) for better discrimination.
 
 References:
-    Berta et al. (2025). "Rethinking Early Stopping: Refine, Then Calibrate"
+    Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early Stopping:
+    Refine, Then Calibrate. arXiv preprint arXiv:2501.19195.
+    https://arxiv.org/abs/2501.19195
 
 Requirements:
     pip install xgboost splinator scikit-learn matplotlib

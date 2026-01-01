@@ -1,8 +1,7 @@
 """Calibration metrics and loss decomposition.
 
 This module provides metrics for evaluating probability calibration,
-including the TS-Refinement metrics based on the paper
-"Rethinking Early Stopping: Refine, Then Calibrate".
+including the TS-Refinement metrics based on [1]_.
 
 Key insight: Total loss = Refinement Loss + Calibration Loss
 - Refinement Loss: Irreducible error (model's discriminative ability)
@@ -11,6 +10,12 @@ Key insight: Total loss = Refinement Loss + Calibration Loss
 Use ts_refinement_loss as an early stopping criterion instead of raw
 validation loss to train longer for better discrimination, then apply
 post-hoc calibration.
+
+References
+----------
+.. [1] Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early Stopping:
+       Refine, Then Calibrate. arXiv preprint arXiv:2501.19195.
+       https://arxiv.org/abs/2501.19195
 """
 
 import numpy as np
@@ -391,8 +396,11 @@ def brier_decomposition(y_true, y_pred, sample_weight=None):
     
     References
     ----------
-    Berta et al. (2025). "Rethinking Early Stopping: Refine, Then Calibrate"
-    Spiegelhalter (1986). Statistics in Medicine, 5(5), 421-433.
+    .. [1] Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early
+           Stopping: Refine, Then Calibrate. arXiv:2501.19195.
+           https://arxiv.org/abs/2501.19195
+    .. [2] Spiegelhalter, D. J. (1986). Probabilistic prediction in patient
+           management and clinical trials. Statistics in Medicine, 5(5), 421-433.
     """
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
@@ -500,7 +508,9 @@ def brier_refinement_score(y_true, y_pred, sample_weight=None):
     
     References
     ----------
-    Berta et al. (2025). "Rethinking Early Stopping: Refine, Then Calibrate"
+    .. [1] Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early
+           Stopping: Refine, Then Calibrate. arXiv:2501.19195.
+           https://arxiv.org/abs/2501.19195
     """
     from sklearn.isotonic import IsotonicRegression
     
@@ -560,7 +570,9 @@ def brier_calibration_score(y_true, y_pred, sample_weight=None):
     
     References
     ----------
-    Berta et al. (2025). "Rethinking Early Stopping: Refine, Then Calibrate"
+    .. [1] Berta, M., Ciobanu, S., & Heusinger, M. (2025). Rethinking Early
+           Stopping: Refine, Then Calibrate. arXiv:2501.19195.
+           https://arxiv.org/abs/2501.19195
     """
     decomp = brier_decomposition(y_true, y_pred, sample_weight=sample_weight)
     return decomp['calibration']
