@@ -500,6 +500,8 @@ class LinearSplineLogisticRegression(RegressorMixin, TransformerMixin, BaseEstim
         # Validate sample_weight
         if sample_weight is not None:
             sample_weight = np.asarray(sample_weight)
+            if sample_weight.ndim != 1:
+                raise ValueError("sample_weight must be a 1-D array")
             if sample_weight.shape[0] != X.shape[0]:
                 raise ValueError(
                     f"sample_weight has {sample_weight.shape[0]} samples, "

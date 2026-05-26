@@ -150,4 +150,3 @@ def make_metric_wrapper(
             f"Unknown framework: {framework}. "
             f"Supported: 'sklearn', 'xgboost', 'lightgbm', 'pytorch'"
         )
-

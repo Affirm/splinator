@@ -149,8 +149,20 @@ def _weighted_quantile(values, quantiles, sample_weight=None):
     
     if sample_weight is None:
         return np.quantile(values, quantiles)
-    
+
     sample_weight = np.asarray(sample_weight)
+    if sample_weight.shape != values.shape:
+        raise ValueError("sample_weight must have the same shape as values")
+
+    positive_weight = sample_weight > 0
+    if not np.any(positive_weight):
+        raise ValueError("sample_weight must contain at least one positive value")
+
+    values = values[positive_weight]
+    sample_weight = sample_weight[positive_weight]
+    if np.all(sample_weight == sample_weight[0]):
+        return np.quantile(values, quantiles)
+
     sorted_indices = np.argsort(values)
     sorted_values = values[sorted_indices]
     sorted_weights = sample_weight[sorted_indices]
