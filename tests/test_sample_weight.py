@@ -32,7 +32,16 @@ class TestWeightedQuantile:
         result = _weighted_quantile(X, quantiles, sample_weight=weights)
         expected = np.quantile(X, quantiles)
         
-        np.testing.assert_array_almost_equal(result, expected, decimal=1)
+        np.testing.assert_array_almost_equal(result, expected)
+
+    def test_uniform_weights_preserve_interpolation(self):
+        """Uniform weights should preserve NumPy's interpolated quantiles."""
+        X = np.array([0.0, 10.0])
+        weights = np.ones(2)
+
+        result = _weighted_quantile(X, [0.5], sample_weight=weights)
+
+        np.testing.assert_array_equal(result, np.array([5.0]))
     
     def test_doubled_weights_equivalent_to_duplication(self):
         """Doubling a sample's weight should be like duplicating it."""
@@ -68,6 +77,15 @@ class TestFitKnotsWithWeights:
         knots = _fit_knots(X, num_knots=5, sample_weight=weights)
         
         assert len(knots) == 4
+
+    def test_uniform_weights_match_unweighted_knots(self):
+        """Uniform weights should not change knot placement."""
+        X = np.array([0.0, 10.0])
+        weights = np.ones(2)
+
+        knots = _fit_knots(X, num_knots=2, sample_weight=weights)
+
+        np.testing.assert_array_equal(knots, _fit_knots(X, num_knots=2))
 
 
 class TestLossGradHessWithWeights:
@@ -213,6 +231,10 @@ class TestLinearSplineWithSampleWeight:
         # Wrong length
         with pytest.raises(ValueError, match="sample_weight has .* samples"):
             model.fit(X, y, sample_weight=np.ones(50))
+
+        # Wrong dimensionality
+        with pytest.raises(ValueError, match="1-D"):
+            model.fit(X, y, sample_weight=np.ones((100, 2)))
         
         # Negative weights
         with pytest.raises(ValueError, match="non-negative"):
