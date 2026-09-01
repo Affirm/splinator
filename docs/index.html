@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Splinator is a scikit-learn compatible Python library for probability calibration with linear spline logistic regression."
+    />
+    <meta name="theme-color" content="#000049" />
+    <meta property="og:title" content="Splinator — Probability calibration with splines" />
+    <meta
+      property="og:description"
+      content="Flexible, monotonic, scikit-learn compatible probability calibration."
+    />
+    <meta property="og:type" content="website" />
+    <title>Splinator — Probability calibration with splines</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <nav class="nav shell" aria-label="Main navigation">
+        <a class="wordmark" href="#" aria-label="Splinator home">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M5 24.5 11.2 17l4.2 3.6L27 7.5" />
+            <circle cx="5" cy="24.5" r="2" />
+            <circle cx="11.2" cy="17" r="2" />
+            <circle cx="15.4" cy="20.6" r="2" />
+            <circle cx="27" cy="7.5" r="2" />
+          </svg>
+          <span>splinator</span>
+        </a>
+        <div class="nav-links">
+          <a href="#why">Why splines?</a>
+          <a href="#usage">Quick start</a>
+          <a
+            class="nav-github"
+            href="https://github.com/Affirm/splinator"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M5.2 10.8 10.8 5.2M6 5.2h4.8V10" />
+            </svg>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero shell">
+        <div class="hero-copy">
+          <div class="eyebrow"><span></span> Probability calibration for Python</div>
+          <h1>Make confidence<br />match <em>reality.</em></h1>
+          <p class="hero-lede">
+            Fit smooth, interpretable calibration curves with linear spline logistic
+            regression—without leaving the scikit-learn workflow.
+          </p>
+          <div class="hero-actions">
+            <div class="install-command" aria-label="Installation command">
+              <code>pip install splinator</code>
+              <button class="copy-button" type="button" data-copy="pip install splinator">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <rect x="7" y="7" width="9" height="9" rx="1.5" />
+                  <path d="M5 13H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1" />
+                </svg>
+                <span>Copy</span>
+              </button>
+            </div>
+            <a
+              class="button-secondary"
+              href="https://pypi.org/project/splinator/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              View on PyPI
+            </a>
+          </div>
+          <div class="hero-meta" aria-label="Project details">
+            <span>v0.3.0</span>
+            <span>Python 3.9+</span>
+            <span>BSD-3-Clause</span>
+          </div>
+        </div>
+
+        <div class="chart-card" aria-label="Interactive probability calibration chart">
+          <div class="chart-header">
+            <div>
+              <p class="chart-label">Reliability curve</p>
+              <h2>Predicted vs. observed</h2>
+            </div>
+            <div class="live-badge"><span></span> Interactive</div>
+          </div>
+
+          <div class="chart-wrap">
+            <svg
+              class="calibration-chart"
+              viewBox="0 0 520 380"
+              role="img"
+              aria-labelledby="chart-title chart-description"
+            >
+              <title id="chart-title">Probability calibration reliability curve</title>
+              <desc id="chart-description">
+                A fitted spline follows observed calibration points toward the ideal diagonal.
+              </desc>
+              <g class="grid">
+                <path d="M58 34V326M58 326H492" />
+                <path d="M58 253H492M58 180H492M58 107H492M166.5 34V326M275 34V326M383.5 34V326M492 34V326" />
+              </g>
+              <path class="ideal-line" d="M58 326 492 34" />
+              <path
+                id="spline-path"
+                class="spline-line"
+                d="M58 310 C100 298 115 280 145 257 C188 224 203 222 238 206 C280 187 298 153 330 132 C370 106 402 102 430 75 C456 51 473 43 492 40"
+              />
+              <g class="observations">
+                <circle cx="84" cy="301" r="5" />
+                <circle cx="130" cy="271" r="5" />
+                <circle cx="181" cy="231" r="5" />
+                <circle cx="233" cy="211" r="5" />
+                <circle cx="281" cy="181" r="5" />
+                <circle cx="330" cy="126" r="5" />
+                <circle cx="383" cy="111" r="5" />
+                <circle cx="435" cy="69" r="5" />
+                <circle cx="475" cy="47" r="5" />
+              </g>
+              <g class="axis-labels">
+                <text x="58" y="350">0</text>
+                <text x="275" y="350" text-anchor="middle">0.5</text>
+                <text x="492" y="350" text-anchor="end">1.0</text>
+                <text x="44" y="330" text-anchor="end">0</text>
+                <text x="44" y="184" text-anchor="end">0.5</text>
+                <text x="44" y="40" text-anchor="end">1.0</text>
+                <text x="275" y="376" text-anchor="middle">Predicted probability</text>
+                <text transform="translate(14 180) rotate(-90)" text-anchor="middle">
+                  Observed frequency
+                </text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="chart-controls">
+            <label for="knots">
+              <span>Curve flexibility</span>
+              <strong id="knot-label">10 knots</strong>
+            </label>
+            <input id="knots" type="range" min="4" max="20" value="10" step="2" />
+            <div class="legend">
+              <span><i class="legend-spline"></i> Fitted spline</span>
+              <span><i class="legend-ideal"></i> Ideal calibration</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="signal-strip" aria-label="Library highlights">
+        <div class="shell signal-grid">
+          <div><strong>1</strong><span>focused estimator</span></div>
+          <div><strong>3</strong><span>monotonic modes</span></div>
+          <div><strong>2</strong><span>optimization solvers</span></div>
+          <div><strong>100%</strong><span>scikit-learn workflow</span></div>
+        </div>
+      </section>
+
+      <section id="why" class="section shell">
+        <div class="section-heading">
+          <div class="eyebrow"><span></span> Why splines?</div>
+          <h2>Flexible where it matters.<br />Constrained where it counts.</h2>
+          <p>
+            Sigmoid calibration can be too rigid. Isotonic calibration can be too
+            jagged. Splinator gives you a smooth middle path.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card feature-card-wide">
+            <div class="feature-number">01</div>
+            <div>
+              <h3>Shape-aware calibration</h3>
+              <p>
+                Choose increasing, decreasing, or unconstrained curves. Linear
+                constraints keep probability mappings sensible while preserving local
+                flexibility.
+              </p>
+            </div>
+            <div class="mini-chart" aria-hidden="true">
+              <svg viewBox="0 0 300 130">
+                <path class="mini-grid" d="M10 110H290M10 65H290M10 20H290" />
+                <path class="mini-line" d="M10 112 C55 108 58 86 100 83 S155 58 190 57 S240 29 290 18" />
+                <circle cx="66" cy="91" r="4" />
+                <circle cx="132" cy="72" r="4" />
+                <circle cx="211" cy="46" r="4" />
+                <circle cx="270" cy="24" r="4" />
+              </svg>
+            </div>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-number">02</div>
+            <h3>Drop-in estimator</h3>
+            <p>
+              Familiar <code>fit</code>, <code>predict</code>, and
+              <code>transform</code> methods make calibration easy to add to existing
+              pipelines.
+            </p>
+            <div class="method-pills" aria-hidden="true">
+              <span>.fit()</span><span>.predict()</span><span>.transform()</span>
+            </div>
+          </article>
+
+          <article class="feature-card dark-card">
+            <div class="feature-number">03</div>
+            <h3>Built for control</h3>
+            <p>
+              Set the knot count or pass exact knot locations. Tune regularization and
+              choose SLSQP or trust-constr optimization.
+            </p>
+            <div class="control-lines" aria-hidden="true">
+              <span style="--line-width: 72%"></span>
+              <span style="--line-width: 46%"></span>
+              <span style="--line-width: 88%"></span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="usage" class="code-section">
+        <div class="shell code-grid">
+          <div class="code-copy">
+            <div class="eyebrow light"><span></span> Quick start</div>
+            <h2>From raw scores to calibrated probabilities.</h2>
+            <p>
+              Pass a score column, choose your knot count, and fit. Additional columns
+              can travel alongside the calibrated score as unconstrained features.
+            </p>
+            <ol class="steps">
+              <li><span>1</span><div><strong>Configure</strong><small>Choose knots and monotonicity.</small></div></li>
+              <li><span>2</span><div><strong>Fit</strong><small>Optimize regularized log loss.</small></div></li>
+              <li><span>3</span><div><strong>Calibrate</strong><small>Return probabilities from 0 to 1.</small></div></li>
+            </ol>
+          </div>
+
+          <div class="code-window">
+            <div class="window-bar">
+              <span></span><span></span><span></span>
+              <p>calibrate.py</p>
+              <button type="button" class="icon-copy" data-copy-target="#code-sample" aria-label="Copy code sample">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <rect x="7" y="7" width="9" height="9" rx="1.5" />
+                  <path d="M5 13H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v1" />
+                </svg>
+              </button>
+            </div>
+            <pre><code id="code-sample"><span class="syntax-purple">from</span> splinator.estimators <span class="syntax-purple">import</span> (
+    LinearSplineLogisticRegression,
+)
+
+calibrator = LinearSplineLogisticRegression(
+    n_knots=<span class="syntax-number">10</span>,
+    monotonicity=<span class="syntax-string">"increasing"</span>,
+    C=<span class="syntax-number">100</span>,
+)
+
+calibrator.fit(scores, outcomes)
+probabilities = calibrator.predict(scores)</code></pre>
+            <div class="code-output">
+              <span>output</span>
+              <code>array([0.071, 0.284, 0.813, 0.946])</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section shell final-cta">
+        <div>
+          <div class="eyebrow"><span></span> Open source</div>
+          <h2>Better probabilities<br />start with a better curve.</h2>
+        </div>
+        <div class="cta-copy">
+          <p>
+            Splinator is maintained by contributors at Affirm and released under the
+            BSD 3-Clause license.
+          </p>
+          <div class="cta-actions">
+            <a
+              class="button-primary"
+              href="https://github.com/Affirm/splinator"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Explore the source
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 10h12M11 5l5 5-5 5" />
+              </svg>
+            </a>
+            <a
+              class="text-link"
+              href="https://splinator.readthedocs.io/en/latest/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Read the docs
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="shell footer-inner">
+        <a class="wordmark footer-wordmark" href="#">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M5 24.5 11.2 17l4.2 3.6L27 7.5" />
+            <circle cx="5" cy="24.5" r="2" />
+            <circle cx="11.2" cy="17" r="2" />
+            <circle cx="15.4" cy="20.6" r="2" />
+            <circle cx="27" cy="7.5" r="2" />
+          </svg>
+          <span>splinator</span>
+        </a>
+        <p>Linear spline logistic regression for probability calibration.</p>
+        <div class="footer-links">
+          <a href="https://pypi.org/project/splinator/">PyPI</a>
+          <a href="https://github.com/Affirm/splinator">GitHub</a>
+          <a href="https://github.com/Affirm/splinator/blob/main/LICENSE">License</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
